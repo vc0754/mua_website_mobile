@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <span style="position:fixed; top:17px; right:60px; z-index:1000;">{{ scrollTop }}</span>
     <header :class="[ 'header', screen_current === 1 ? 'first_screen' : '' ]">
       <div class="inner">
         <img :src="logo[0]" alt="" class="logo" v-if="nav_status">
@@ -11,7 +12,7 @@
       <nav :class="['nav-wrap', nav_status === 1 ? 'show': '' ]">
         <ul class="nav">
           <li :class="[ nav_current === 0 ? 'active' : '' ]">
-            <a href="#" @click="goto(0)">
+            <a href="#" @click="goto(1)">
               <div>
                 <span>首</span>
                 <span>页</span>
@@ -20,13 +21,13 @@
             </a>
           </li>
           <li :class="[ nav_current === 1 ? 'active' : '' ]">
-            <a href="#" @click="goto(1)">
+            <a href="#" @click="goto(2)">
               <div>优秀产品</div>
               <img src="./assets/icon／右箭头@2x.png" alt="" class="arr">
             </a>
           </li>
           <li :class="[ nav_current === 2 ? 'active' : '' ]">
-            <a href="#">
+            <a href="#" @click="goto(1)">
               <div>申请代理</div>
               <img src="./assets/icon／右箭头@2x.png" alt="" class="arr">
             </a>
@@ -72,18 +73,18 @@
       </div>
     </section>
     
+    <!-- 第二屏 -->
     <section ref="ss">
-      <!-- 第二屏 -->
       <nav class="subnav">
-        <div class="col" @click="goto2(8)">
+        <div class="col" @click="goto2(1)">
           <img src="./assets/主icon 二手闲置2@2x.png" alt="" class="icon">
           <p class="label">二手闲置</p>
         </div>
-        <div class="col" @click="goto2(0)">
+        <div class="col" @click="goto2(2)">
           <img src="./assets/主icon遇见2@2x.png" alt="" class="icon">
           <p class="label">遇见社交</p>
         </div>
-        <div class="col current" @click="goto2(2)">
+        <div class="col current" @click="goto2(3)">
           <img src="./assets/主icon 体验馆2@2x.png" alt="" class="icon">
           <p class="label">恋爱体验馆</p>
         </div>
@@ -91,7 +92,7 @@
           <img src="./assets/主icon校园嗨聊2@2x.png" alt="" class="icon">
           <p class="label">校园嗨聊</p>
         </div>
-        <div class="col" @click="goto2(6)">
+        <div class="col" @click="goto2(5)">
           <img src="./assets/主icon 代办2@2x.png" alt="" class="icon">
           <p class="label">跑腿代办</p>
         </div>
@@ -116,8 +117,7 @@
           <p>识别小程序码，立即体验</p>
         </div>
       </div>
-
-
+      
       <div class="cc">
         <div style="margin: 0 -24px;">
           <img src="./assets/恋爱体验馆-01首页@2x.png" alt="">
@@ -137,8 +137,7 @@
           <p>识别小程序码，立即体验</p>
         </div>
       </div>
-
-
+      
       <div class="cc">
         <div style="margin: 0 -24px;">
           <img src="./assets/校园嗨聊-01首页@2x.png" alt="">
@@ -158,8 +157,7 @@
           <p>识别小程序码，立即体验</p>
         </div>
       </div>
-
-
+      
       <div class="cc">
         <div style="margin: 0 -24px;">
           <img src="./assets/校园代办-01首页@2x.png" alt="">
@@ -179,8 +177,7 @@
           <p>识别小程序码，立即体验</p>
         </div>
       </div>
-
-
+      
       <div class="cc">
         <div style="margin: 0 -24px;">
           <img src="./assets/二手闲置-01首页@2x.png" alt="">
@@ -200,11 +197,6 @@
           <p>识别小程序码，立即体验</p>
         </div>
       </div>
-
-      <div class="point">
-        <span :class="[ point === 0 ? 'active' : '']"></span>
-        <span :class="[ point === 1 ? 'active' : '']"></span>
-      </div>
     </section>
     
   </div>
@@ -220,6 +212,7 @@ export default {
   data() {
     return {
       scrolling: false,
+      scrollTop: 0,
       screen_current: 1,
       logo: [
         require('./assets/logo0.png'),
@@ -258,11 +251,21 @@ export default {
       this.nav_status = this.nav_status === 0 ? 1 : 0
     },
     goto(index) {
-      this.swiper.slideTo(index)
-      // mySwiper.slideTo(index, speed, runCallbacks);
+      let top = 0
+      if (index === 1) {
+        top = 0
+      } else if (index === 2) {
+        top = document.body.clientHeight - 54
+      }
+      this.scrolling = true
+      $('html,body').stop().animate({ scrollTop: `${top}px` }, 360, () => {
+        this.screen_current = index
+        this.scrolling = false
+      })
+      this.nav_status = 0
     },
     goto2(index) {
-      this.swiper2.slideTo(index)
+      console.log(index)
     },
     prev() {
       if (this.nav2_current === 0) return
@@ -272,20 +275,25 @@ export default {
       if (this.nav2_current === 9) return
       this.swiper2.slideTo(this.nav2_current + 1)
     },
-    handleScroll(e) {
-      if (this.scrolling) return
-      this.scrolling = true
-      if (e.deltaY > 0) {
-        if (this.screen_current === 1) this.screen_current = 2
-        $('html,body').animate({ scrollTop: `${document.body.clientHeight}px` }, 500, () => {
-          this.scrolling = false
-        })
-      } else {
-        if (this.screen_current === 2) this.screen_current = 1
-        $('html,body').animate({ scrollTop: `0px` }, 500, () => {
-          this.scrolling = false
-        })
-      }
+    handleScroll() {
+      this.$nextTick(() => {
+        this.top = window.pageYOffset
+      })
+      // console.log()
+      // this.top = 
+      // if (this.scrolling) return
+      // this.scrolling = true
+      // if (e.deltaY > 0) {
+      //   if (this.screen_current === 1) this.screen_current = 2
+      //   $('html,body').animate({ scrollTop: `${document.body.clientHeight}px` }, 500, () => {
+      //     this.scrolling = false
+      //   })
+      // } else {
+      //   if (this.screen_current === 2) this.screen_current = 1
+      //   $('html,body').animate({ scrollTop: `0px` }, 500, () => {
+      //     this.scrolling = false
+      //   })
+      // }
 
       // return
 
@@ -322,8 +330,40 @@ export default {
     }
   },
   mounted(){
-    // this.handleScroll()
-    window.addEventListener('mousewheel', this.handleScroll, false)
+    // try {
+    //   window.addEventListener("mousewheel", this.handleScroll) || window.addEventListener("DOMMouseScroll", this.handleScroll);
+    // } catch(e) {
+    //   window.attachEvent("mousewheel", this.handleScroll);
+    // }
+
+    // console.log(document.body.scrollHeight);
+    // var a = document.body.scrollHeight;
+
+    window.addEventListener("scroll", () => {
+      this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+      
+      if (!this.scrolling) {
+        let height = document.body.clientHeight - 54
+        if (this.scrollTop > 0 && this.screen_current === 1) {
+          this.scrolling = true
+          $('html,body').stop().animate({ scrollTop: `${height}px` }, 360, () => {
+            this.scrolling = false
+            this.screen_current = 2
+          })
+        } else if (this.scrollTop < height && this.screen_current === 2) {
+          this.scrolling = true
+          $('html,body').stop().animate({ scrollTop: `0px` }, 360, () => {
+            this.screen_current = 1
+            this.scrolling = false
+          })
+        }
+      }
+      // console.log(scrollTop);
+      // if (scrollTop > (a/2)){
+      //   console.log('xxxxxxxxxxxxxxxxxxx');
+      // }
+    });
+
   }
 }
 </script>
