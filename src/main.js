@@ -1,15 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
+import ViewUI from 'view-design';
+import 'view-design/dist/styles/iview.css';
 
-// import $ from 'jquery'
-// import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css'
-// import 'bootstrap/dist/js/bootstrap.min.js'
-// import './node_modules/bootstrap/dist/css/bootstrap.min.css';
-// import './node_modules/bootstrap/dist/js/bootstrap.min.js';
-
-// import 'swiper/dist/js/swiper.min.js';
-import 'swiper/swiper-bundle.css';
+Vue.use(ViewUI);
 
 Vue.config.productionTip = false
 
