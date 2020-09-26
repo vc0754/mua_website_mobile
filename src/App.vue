@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <span style="position:fixed; top:17px; right:60px; z-index:1000;">{{ scrollTop }}</span>
+    <span style="position:fixed; top:17px; right:60px; z-index:1000;">{{ scrolling }} {{ scrollTop }}</span>
     <header :class="[ 'header', screen_current === 1 ? 'first_screen' : '' ]">
       <div class="inner">
         <img :src="logo[0]" alt="" class="logo" v-if="nav_status">
@@ -74,31 +74,31 @@
     </section>
     
     <!-- 第二屏 -->
-    <section ref="ss">
+    <section>
       <nav class="subnav">
-        <div class="col" @click="goto2(1)">
-          <img src="./assets/主icon 二手闲置2@2x.png" alt="" class="icon">
-          <p class="label">二手闲置</p>
-        </div>
-        <div class="col" @click="goto2(2)">
-          <img src="./assets/主icon遇见2@2x.png" alt="" class="icon">
-          <p class="label">遇见社交</p>
-        </div>
-        <div class="col current" @click="goto2(3)">
-          <img src="./assets/主icon 体验馆2@2x.png" alt="" class="icon">
-          <p class="label">恋爱体验馆</p>
+        <div class="col" @click="goto2(3)">
+          <img src="./assets/主icon 代办@2x.png" alt="" class="icon">
+          <p class="label">跑腿代办</p>
         </div>
         <div class="col" @click="goto2(4)">
-          <img src="./assets/主icon校园嗨聊2@2x.png" alt="" class="icon">
-          <p class="label">校园嗨聊</p>
+          <img src="./assets/主icon 二手闲置@2x.png" alt="" class="icon">
+          <p class="label">二手闲置</p>
         </div>
-        <div class="col" @click="goto2(5)">
-          <img src="./assets/主icon 代办2@2x.png" alt="" class="icon">
-          <p class="label">跑腿代办</p>
+        <div class="col current" @click="goto2(0)">
+          <img src="./assets/主icon -遇见@2x.png" alt="" class="icon">
+          <p class="label">遇见社交</p>
+        </div>
+        <div class="col" @click="goto2(1)">
+          <img src="./assets/主icon 体验馆@2x.png" alt="" class="icon">
+          <p class="label">恋爱体验馆</p>
+        </div>
+        <div class="col" @click="goto2(2)">
+          <img src="./assets/主icon 体验馆备份@2x.png" alt="" class="icon">
+          <p class="label">校园嗨聊</p>
         </div>
       </nav>
       
-      <div class="cc">
+      <div class="cc" ref="cc1">
         <div style="margin: 0 -24px;">
           <img src="./assets/遇见社交-01广场@2x.png" alt="">
         </div>
@@ -118,7 +118,7 @@
         </div>
       </div>
       
-      <div class="cc">
+      <div class="cc" ref="cc2">
         <div style="margin: 0 -24px;">
           <img src="./assets/恋爱体验馆-01首页@2x.png" alt="">
         </div>
@@ -138,7 +138,7 @@
         </div>
       </div>
       
-      <div class="cc">
+      <div class="cc" ref="cc3">
         <div style="margin: 0 -24px;">
           <img src="./assets/校园嗨聊-01首页@2x.png" alt="">
         </div>
@@ -158,7 +158,7 @@
         </div>
       </div>
       
-      <div class="cc">
+      <div class="cc" ref="cc4">
         <div style="margin: 0 -24px;">
           <img src="./assets/校园代办-01首页@2x.png" alt="">
         </div>
@@ -178,7 +178,7 @@
         </div>
       </div>
       
-      <div class="cc">
+      <div class="cc" ref="cc5">
         <div style="margin: 0 -24px;">
           <img src="./assets/二手闲置-01首页@2x.png" alt="">
         </div>
@@ -339,29 +339,42 @@ export default {
     // console.log(document.body.scrollHeight);
     // var a = document.body.scrollHeight;
 
+    // $("divID").offset().top
+    // document.getElementById("divID").offsetTop
+
     window.addEventListener("scroll", () => {
+      let offetTops = [
+        $(this.$refs.cc5).offset().top - document.body.clientHeight,
+        $(this.$refs.cc4).offset().top - document.body.clientHeight,
+        $(this.$refs.cc3).offset().top - document.body.clientHeight,
+        $(this.$refs.cc2).offset().top - document.body.clientHeight,
+        $(this.$refs.cc1).offset().top - document.body.clientHeight
+      ]
+      // console.log(offetTops)
+
       this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
       
       if (!this.scrolling) {
         let height = document.body.clientHeight - 54
-        if (this.scrollTop > 0 && this.screen_current === 1) {
-          this.scrolling = true
-          $('html,body').stop().animate({ scrollTop: `${height}px` }, 360, () => {
-            this.scrolling = false
-            this.screen_current = 2
-          })
-        } else if (this.scrollTop < height && this.screen_current === 2) {
+        if (this.scrollTop < height && this.screen_current != 1) {
           this.scrolling = true
           $('html,body').stop().animate({ scrollTop: `0px` }, 360, () => {
             this.screen_current = 1
             this.scrolling = false
           })
+        } else if (this.scrollTop > 0 && this.screen_current === 1) {
+          this.scrolling = true
+          $('html,body').stop().animate({ scrollTop: `${height}px` }, 360, () => {
+            this.scrolling = false
+            this.screen_current = 2
+          })
+        } else {
+          let i = offetTops.findIndex(item => {
+            return this.scrollTop > item
+          });
+          console.log(i)
         }
       }
-      // console.log(scrollTop);
-      // if (scrollTop > (a/2)){
-      //   console.log('xxxxxxxxxxxxxxxxxxx');
-      // }
     });
 
   }
@@ -442,7 +455,7 @@ img { max-width: 100%;}
   background-color: #fff;
   width: 100%;
   position: sticky; top: 53px;
-  padding: 12px 16px; margin-bottom: 10px;
+  padding: 12px 16px;
   display: flex; justify-content: space-between; align-items: center;
   .col {
     display: flex; flex-direction: column; align-items: center;
@@ -492,7 +505,7 @@ img { max-width: 100%;}
 }
 .cc {
   width: 100%; overflow: hidden;
-  padding: 16px; padding-bottom: 80px;
+  padding: 25px 16px 120px;
   .info {
     padding: 20px 20px 30px;
     font-size: 13px;
