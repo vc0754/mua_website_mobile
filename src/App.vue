@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <span style="position:fixed; top:17px; right:60px; z-index:1000;">{{ scrolling }} {{ scrollTop }}</span>
+  <div id="app" @touchstart="gtouchstart" @touchend="gtouchend">
+    <!-- <span style="position:fixed; top:17px; right:60px; z-index:1000;">{{ isTouch }} {{ nav2_current }} {{ scrolling }} {{ scrollTop }}</span> -->
     <header :class="[ 'header', screen_current === 1 ? 'first_screen' : '' ]">
       <div class="inner">
         <img :src="logo[0]" alt="" class="logo" v-if="nav_status">
@@ -40,7 +40,7 @@
       <li :class="[ screen_current === index ? 'active' : '' ]" v-for="index in 7" :key="index"></li>
     </ul>
     
-    <section class="wrap">
+    <section class="wrap" @touchstart="gtouchstart" @touchend="gtouchend">
       <div class="background-wrap" :style="{ backgroundImage: `url('${require('./assets/背景-移动端官网@2x.png')}')` }"></div>
       <div class="content-layer color-white">
         <img src="./assets/标题@2x.png" alt="" style="width:243px; margin-bottom:50px;">
@@ -76,29 +76,29 @@
     <!-- 第二屏 -->
     <section>
       <nav class="subnav">
-        <div class="col" @click="goto2(3)">
+        <div :class="[ 'col', nav2_current === 3 ? 'current' : '' ]" @click="goto2(3)">
           <img src="./assets/主icon 代办@2x.png" alt="" class="icon">
           <p class="label">跑腿代办</p>
         </div>
-        <div class="col" @click="goto2(4)">
+        <div :class="[ 'col', nav2_current === 4 ? 'current' : '' ]" @click="goto2(4)">
           <img src="./assets/主icon 二手闲置@2x.png" alt="" class="icon">
           <p class="label">二手闲置</p>
         </div>
-        <div class="col current" @click="goto2(0)">
+        <div :class="[ 'col', nav2_current === 0 ? 'current' : '' ]" @click="goto2(0)">
           <img src="./assets/主icon -遇见@2x.png" alt="" class="icon">
           <p class="label">遇见社交</p>
         </div>
-        <div class="col" @click="goto2(1)">
+        <div :class="[ 'col', nav2_current === 1 ? 'current' : '' ]" @click="goto2(1)">
           <img src="./assets/主icon 体验馆@2x.png" alt="" class="icon">
           <p class="label">恋爱体验馆</p>
         </div>
-        <div class="col" @click="goto2(2)">
+        <div :class="[ 'col', nav2_current === 2 ? 'current' : '' ]" @click="goto2(2)">
           <img src="./assets/主icon 体验馆备份@2x.png" alt="" class="icon">
           <p class="label">校园嗨聊</p>
         </div>
       </nav>
       
-      <div class="cc" ref="cc1">
+      <div class="cc" ref="cc1" style="padding-top:25px;">
         <div style="margin: 0 -24px;">
           <img src="./assets/遇见社交-01广场@2x.png" alt="">
         </div>
@@ -211,6 +211,7 @@ export default {
   },
   data() {
     return {
+      offetTops: [],
       scrolling: false,
       scrollTop: 0,
       screen_current: 1,
@@ -224,13 +225,8 @@ export default {
         require('./assets/icon-菜单关闭@2x - 副本.png'),
         require('./assets/icon-菜单关闭@2x.png')
       ],
-      nav_current: 0,
+      nav_current: 1,
       nav_status: 0,
-      nav_left: [
-        3.5,
-        82.5
-      ],
-      swiper2: null,
       nav2_current: 0,
       nav2_left: [
         23, 23,
@@ -239,7 +235,7 @@ export default {
         485, 485,
         645, 645
       ],
-      point: 0
+      isTouch: false
     }
   },
   methods: {
@@ -265,68 +261,18 @@ export default {
       this.nav_status = 0
     },
     goto2(index) {
-      console.log(index)
-    },
-    prev() {
-      if (this.nav2_current === 0) return
-      this.swiper2.slideTo(this.nav2_current - 1)
-    },
-    next() {
-      if (this.nav2_current === 9) return
-      this.swiper2.slideTo(this.nav2_current + 1)
-    },
-    handleScroll() {
-      this.$nextTick(() => {
-        this.top = window.pageYOffset
+      this.nav2_current = index
+      this.scrolling = true
+      $('html,body').stop().animate({ scrollTop: `${this.offetTops[4 - index] - 137}px` }, 360, () => {
+        this.scrolling = false
+        this.screen_current = 2 + this.nav2_current
       })
-      // console.log()
-      // this.top = 
-      // if (this.scrolling) return
-      // this.scrolling = true
-      // if (e.deltaY > 0) {
-      //   if (this.screen_current === 1) this.screen_current = 2
-      //   $('html,body').animate({ scrollTop: `${document.body.clientHeight}px` }, 500, () => {
-      //     this.scrolling = false
-      //   })
-      // } else {
-      //   if (this.screen_current === 2) this.screen_current = 1
-      //   $('html,body').animate({ scrollTop: `0px` }, 500, () => {
-      //     this.scrolling = false
-      //   })
-      // }
-
-      // return
-
-      // // console.log(e)
-      // if (e.deltaY > 0) {
-      //   this.screen_current++
-      //   // this.$refs.ss.scrollIntoView({ behavior: "smooth" });
-      //   // this.$nextTick(() => {
-      //   //   this.$refs.ss.scrollTo(0, 200, true)
-      //   // })
-      //   // document.documentElement.scrollTop = 500;
-      //   // this.$nextTick(() => {
-      //   //   console.log(this.$refs)
-      //   //   this.$refs.ss.scrollIntoView({ behavior: "smooth" });
-      //   // })
-      //   // this.swiper.slideTo(1)
-      // } else {
-      //   this.screen_current = 1
-      //   // this.swiper.slideTo(0)
-      // }
-      
-      // this.$nextTick(() => {
-      //   setTimeout(() => {
-      //     let targetbox= document.getElementById('targetbox');
-      //     this.target= targetbox.offsetTop;        
-      //   })
-      // })
-      // document.body.scrollTop = 300;
-      // document.getElementById("app").scrollIntoView();
-      
-      // document.documentElement.scrollTop = 500;
-      // console.log(this.$refs.result.scrollIntoView)
-      // this.$refs.result.scrollIntoView({ behavior: "smooth" });
+    },
+    gtouchstart() {
+      this.isTouch = true
+    },
+    gtouchend() {
+      this.isTouch = false
     }
   },
   mounted(){
@@ -343,18 +289,18 @@ export default {
     // document.getElementById("divID").offsetTop
 
     window.addEventListener("scroll", () => {
-      let offetTops = [
-        $(this.$refs.cc5).offset().top - document.body.clientHeight,
-        $(this.$refs.cc4).offset().top - document.body.clientHeight,
-        $(this.$refs.cc3).offset().top - document.body.clientHeight,
-        $(this.$refs.cc2).offset().top - document.body.clientHeight,
-        $(this.$refs.cc1).offset().top - document.body.clientHeight
+      this.offetTops = [
+        $(this.$refs.cc5).offset().top,
+        $(this.$refs.cc4).offset().top,
+        $(this.$refs.cc3).offset().top,
+        $(this.$refs.cc2).offset().top,
+        $(this.$refs.cc1).offset().top
       ]
-      // console.log(offetTops)
+      // console.log(this.offetTops)
 
       this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
-      
-      if (!this.scrolling) {
+
+      if (!this.scrolling && !this.isTouch) {
         let height = document.body.clientHeight - 54
         if (this.scrollTop < height && this.screen_current != 1) {
           this.scrolling = true
@@ -363,16 +309,24 @@ export default {
             this.scrolling = false
           })
         } else if (this.scrollTop > 0 && this.screen_current === 1) {
+          this.nav2_current = 0
           this.scrolling = true
           $('html,body').stop().animate({ scrollTop: `${height}px` }, 360, () => {
             this.scrolling = false
             this.screen_current = 2
           })
-        } else {
-          let i = offetTops.findIndex(item => {
-            return this.scrollTop > item
+        } else if (this.screen_current > 1) {
+          let i = this.offetTops.findIndex(item => {
+            return this.scrollTop > item - document.body.clientHeight
           });
-          console.log(i)
+          if (this.nav2_current !== 4 - i) {
+            this.nav2_current = 4 - i
+            this.scrolling = true
+            $('html,body').stop().animate({ scrollTop: `${this.offetTops[i] - 137}px` }, 360, () => {
+              this.scrolling = false
+              this.screen_current = 2 + this.nav2_current
+            })
+          }
         }
       }
     });
@@ -390,7 +344,7 @@ img { max-width: 100%;}
 .header {
   background-color: #fff;
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 16px 16px 0 16px;
+  padding: 17px 16px 0 16px;
   .inner {
     padding-bottom: 16px;
     border-bottom: solid 0.5px rgba(255, 255, 255, .15);
@@ -505,7 +459,7 @@ img { max-width: 100%;}
 }
 .cc {
   width: 100%; overflow: hidden;
-  padding: 25px 16px 120px;
+  padding: 0 16px 120px;
   .info {
     padding: 20px 20px 30px;
     font-size: 13px;
